@@ -6,3 +6,9 @@ Revision history for Perl extension Date::Components.
         - The version above, 0.0.1, was manually changed from the automatically
           generated version, 0.01.  This conforms to Perl Best Practices.
 
+
+0.0.2  Wed Nov 28 18:49:37 CST 2007
+	- Previous version did not have reference to Test::Manifest and thus
+          failed virtually all tests by CPAN testers.  It is now included
+          in the Makefile.PL file.  Dependencies were also added for these two
+          POD modules, Test::Pod and Test::Pod::Coverage.

@@ -9,10 +9,14 @@ WriteMakefile(
     NAME              => 'Date::Components',
     VERSION_FROM      => 'lib/Date/Components.pm', # finds $VERSION
     PREREQ_PM         => {
-                          Carp           => 1.04,
-                          Readonly       => 1.03,
+                          Carp                 => 1.04,
+                          Readonly             => 1.03,
+                          Readonly::XS         => 1.04,
+                          Test::Manifest       => 1.22,
+                          Test::Pod            => 1.26,
+                          Test::Pod::Coverage  => 1.08,
                          }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Date/Components.pm', # retrieve abstract from module
-       AUTHOR         => 'David McAllister <dreamer@suse.de>') : ()),
+       AUTHOR         => 'David McAllister <perldave@gmail.com>') : ()),
 );

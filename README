@@ -1,4 +1,4 @@
-Date-Components version 0.01
+Date-Components version 0.0.2
 =======================
 
 The README is used to introduce the module and provide instructions on
@@ -24,10 +24,15 @@ To install this module type the following:
 
 DEPENDENCIES
 
+
+
 This module requires these other modules and libraries:
 
-     Carp           1.04
-     Readonly       1.03
+     Carp                  1.04
+     Readonly              1.03
+     Test::Manifest        1.22
+     Test::Pod             1.26
+     Test::Pod::Coverage   1.08
 
    Install but do NOT use.  Readonly accesses it to improve performance
      Readonly::XS  1.04  
@@ -39,7 +44,7 @@ COPYRIGHT AND LICENSE
 
    Copyright (C) 2007 by David McAllister
 
-   Date::Components version 0.0.1 
+   Date::Components version 0.0.2 
 
    This program is free (or copyleft) software: you can redistribute it and/or
    modify it under the terms of the GNU General Public License as published by

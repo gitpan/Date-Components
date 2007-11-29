@@ -9,8 +9,8 @@ require Exporter;
 
 our @ISA = qw(Exporter);
 
-eval {use Carp      1.04  qw(croak)};
-eval {use Readonly  1.03};
+eval {use Carp            1.04  qw(croak)};
+eval {use Readonly        1.03};
 
 our @EXPORT = qw();
 
@@ -68,7 +68,7 @@ our %EXPORT_TAGS = (
                     'all' => [ @EXPORT_OK, @EXPORT ],
                    );
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.0.2');
 
 
 # According to the Royal Greenwich Observatory, the calendar year is 365 days
@@ -2825,13 +2825,13 @@ Date::Components - Parses, processes and formats ONLY dates and date components
 
 =head1 VERSION
 
-This documentation refers to Date::Components version 0.0.1
+This documentation refers to Date::Components version 0.0.2
 
 =head1 SYNOPSIS
 
 
   use Carp              1.04   qw(croak);
-  use Date::Components  0.0.1  qw(
+  use Date::Components  0.0.2  qw(
                                   date_only_parse
                                   is_valid_year
                                   set_day_to_day_name_abbrev
@@ -2905,55 +2905,120 @@ Date strings returned by subroutines are always in default format.
 
 =head2 Subroutine List
 
-   Frontend / Backend
-            date_only_parse
-            format_date
+=over 4
 
-   Validity Check
-            is_valid_date
-            is_valid_month
-            is_valid_day_of_month
-            is_valid_day_of_week
-            is_valid_year
-            is_valid_400_year_cycle
+=item Frontend / Backend
 
-   Component Formatting
-            set_day_to_day_name_abbrev
-            set_day_to_day_name_full
-            set_day_to_day_number
-            set_month_to_month_name_abbrev
-            set_month_to_month_name_full
-            set_month_to_month_number
-            day_name_to_day_number
-            day_number_to_day_name
-            month_name_to_month_number
-            month_number_to_month_name
+=over 4
 
-   Date Operations
-            compare_date1_and_date2
-            date1_to_date2_delta
-            date_offset_in_days
-            compare_year1_and_year2
-            year1_to_year2_delta
-            date_offset_in_years
-            number_of_weekdays_in_range
+=item C<date_only_parse>
 
-   Inquiries
-            is_leap_year
-            get_year_phase
-            number_of_day_within_year
-            day_number_within_year_to_date
-            day_number_within_400_year_cycle_to_date
-            get_number_of_day_within_400yr_cycle
-            get_days_remaining_in_400yr_cycle
-            get_num_days_in_year
-            get_days_remaining_in_year
-            get_numeric_day_of_week
-            get_number_of_days_in_month
-            get_days_remaining_in_month
-            get_first_of_month_day_of_week
-            calculate_day_of_week_for_first_of_month_in_next_year
-            get_global_year_cycle
+=item C<format_date>
+
+=back
+
+
+=item Validity Check
+
+=over 4
+
+=item C<is_valid_date>
+
+=item C<is_valid_month>
+
+=item C<is_valid_day_of_month>
+
+=item C<is_valid_day_of_week>
+
+=item C<is_valid_year>
+
+=item C<is_valid_400_year_cycle>
+
+=back
+
+=item Component Formatting
+
+=over 4
+
+=item C<set_day_to_day_name_abbrev>
+
+=item C<set_day_to_day_name_full>
+
+=item C<set_day_to_day_number>
+
+=item C<set_month_to_month_name_abbrev>
+
+=item C<set_month_to_month_name_full>
+
+=item C<set_month_to_month_number>
+
+=item C<day_name_to_day_number>
+
+=item C<day_number_to_day_name>
+
+=item C<month_name_to_month_number>
+
+=item C<month_number_to_month_name>
+
+=back
+
+=item Date Operations
+
+=over 4
+
+=item C<compare_date1_and_date2>
+
+=item C<date1_to_date2_delta>
+
+=item C<date_offset_in_days>
+
+=item C<compare_year1_and_year2>
+
+=item C<year1_to_year2_delta>
+
+=item C<date_offset_in_years>
+
+=item C<number_of_weekdays_in_range>
+
+=back
+
+=item Inquiries
+
+=over 4
+
+=item C<is_leap_year>
+
+=item C<get_year_phase>
+
+=item C<number_of_day_within_year>
+
+=item C<day_number_within_year_to_date>
+
+=item C<day_number_within_400_year_cycle_to_date>
+
+=item C<get_number_of_day_within_400yr_cycle>
+
+=item C<get_days_remaining_in_400yr_cycle>
+
+=item C<get_num_days_in_year>
+
+=item C<get_days_remaining_in_year>
+
+=item C<get_numeric_day_of_week>
+
+=item C<get_number_of_days_in_month>
+
+=item C<get_days_remaining_in_month>
+
+=item C<get_first_of_month_day_of_week>
+
+=item C<calculate_day_of_week_for_first_of_month_in_next_year>
+
+=item C<get_global_year_cycle>
+
+=back
+
+=back
 
 =head2 Parsing and Formatting
 
@@ -4875,8 +4940,13 @@ conditions.  Use the standard C<make test> to run.
 
 =head1 DEPENDENCIES
 
-   - Carp      1.04  qw(croak);
-   - Readonly  1.03;
+   - Carp                  1.04  qw(croak);
+   - Readonly              1.03;
+   - Readonly::XS          1.04;
+   - Test::Manifest        1.22;
+   - Test::Pod             1.26;
+   - Test::Pod::Coverage   1.08;
+
 
 
 
@@ -4920,7 +4990,7 @@ David McAllister, E<lt>perldave@gmail.comE<gt>
 
 Copyright (C) 2007 by David McAllister
 
-Date::Components version 0.0.1 
+Date::Components version 0.0.2 
 
 This program is free (or copyleft) software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by

@@ -6,7 +6,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test::More;
-eval "use Test::Pod::Coverage 1.08";
+eval {use Test::Pod::Coverage 1.08};
 plan skip_all => "Test::Pod::Coverage 1.08 required for testing POD" if $@;
 plan tests => 1;
 pod_coverage_ok( "Date::Components" );
