@@ -55,6 +55,7 @@ our @EXPORT_OK = ( qw(
                       year1_to_year2_delta
                       compare_year1_and_year2
                       date_offset_in_days
+                      date_offset_in_weekdays
                       date_offset_in_years
                       calculate_day_of_week_for_first_of_month_in_next_year
                       get_global_year_cycle
@@ -68,7 +69,7 @@ our %EXPORT_TAGS = (
                     'all' => [ @EXPORT_OK, @EXPORT ],
                    );
 
-use version; our $VERSION = qv('0.0.2');
+use version; our $VERSION = qv('0.1.0');
 
 
 # According to the Royal Greenwich Observatory, the calendar year is 365 days
@@ -582,7 +583,7 @@ sub month_name_to_month_number
          if ( /^(OCT|OCTOBER)$/   )    { return ( 10 ); last SWITCH; }
          if ( /^(NOV|NOVEMBER)$/  )    { return ( 11 ); last SWITCH; }
          if ( /^(DEC|DECEMBER)$/  )    { return ( 12 ); last SWITCH; }
-         croak "\n\n   ($0)   '${\(caller(0))[3]}' This month of year condition, '$month_in_02', must be in alpha form.\n\n\n";
+         croak "\n\n   ($0)   '${\(caller(0))[3]}' This month of year condition, '$month_in_02', must be in alpha form.  Something is amiss.\n\n\n";
          }
       }
    }
@@ -807,8 +808,7 @@ sub set_day_to_day_name_full
          if ( $_ ==  4 )    { return ( 'Thursday'  ); last SWITCH; }
          if ( $_ ==  5 )    { return ( 'Friday'    ); last SWITCH; }
          if ( $_ ==  6 )    { return ( 'Saturday'  ); last SWITCH; }
-         if ( $_ ==  7 )    { return ( 'Sunday'    ); last SWITCH; }
-         croak "\n\n   ($0)   '${\(caller(0))[3]}' This day of week value, '$day_of_week_10', should not occur.  Something is amiss.\n\n\n";
+                              return ( 'Sunday'    );
          }
       }
    }
@@ -893,8 +893,7 @@ sub set_month_to_month_name_full
          if ( $_ ==  9 )    { return ( 'September' ); last SWITCH; }
          if ( $_ == 10 )    { return ( 'October'   ); last SWITCH; }
          if ( $_ == 11 )    { return ( 'November'  ); last SWITCH; }
-         if ( $_ == 12 )    { return ( 'December'  ); last SWITCH; }
-         croak "\n\n   ($0)   '${\(caller(0))[3]}' This month of year value, '$month_num_15', should not occur.  Something is amiss.\n\n\n";
+                              return ( 'December'  );
          }
       }
    }
@@ -2174,7 +2173,7 @@ sub format_date
 
 
    # Incoming Inspection
-   ( ( @_ >  0 )  &&  ( @_ <  5 ) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have a date string and and optional format field, or a list of month,dayofmonth,year and an optional format field.   '@_'.\n\n\n";
+   ( ( @_ >  0 )  &&  ( @_ <  5 ) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have a date string and an optional format field, or a list of month,dayofmonth,year and an optional format field.   '@_'.\n\n\n";
 
 
    my $format_selection_00 = '';
@@ -2226,8 +2225,13 @@ sub format_date
    $mmonth_00 = set_month_to_month_number($mmonth_00);
 
    my $formatted_date_00;
+# '12/30/1999'
+   if ( uc($format_selection_00) eq '' ) # default format
+      {
+      $formatted_date_00 = sprintf "%02d/%02d/%d",  $mmonth_00, $dday_00, $yyear_00;
+      }
 # 'Sun Feb 29 12:00:00 1604'
-   if ( uc($format_selection_00) eq 'A' )
+   elsif ( uc($format_selection_00) eq 'A' )
       {
       my $day_of_week_abbreviated_00 = set_day_to_day_name_abbrev( $day_of_week_04 );
       my $month_abbreviated_00 = set_month_to_month_name_abbrev( $mmonth_00 );
@@ -2251,10 +2255,9 @@ sub format_date
       my $month_15       = set_month_to_month_number( $mmonth_00 );
       $formatted_date_00 = sprintf "%d-%02d-%02d", $yyear_00, $month_15, $dday_00;
       }
-# '12/30/1999'
-   else # default format
+   else
       {
-      $formatted_date_00 = sprintf "%02d/%02d/%d",  $mmonth_00, $dday_00, $yyear_00;
+      croak "\n\n   ($0)   '${\(caller(0))[3]}' This date format selection, '$format_selection_00', is not recognized.  Refer to documentation for allowable options.\n\n\n";
       }
 
    return ($formatted_date_00);
@@ -2359,14 +2362,16 @@ sub get_first_of_month_day_of_week
 
 
 ###############################################################################
-# Usage      : get_numeric_day_of_week( SCALAR, SCALAR, SCALAR )
+# Usage      : Function is overloaded to accept one of two date input types
+#            :    1) Date string
+#            :       get_numeric_day_of_week( SCALAR )
+#            :    2) Month, dayofmonth, year
+#            :       get_numeric_day_of_week( SCALAR, SCALAR, SCALAR )
 # Purpose    : get numeric day of week (1-7) for given date
 # Returns    : - day of week number if successful
-# Parameters : (
-#            :  alpha or month integer<1-12>,
-#            :  day of month integer<1-N>,
-#            :  year integer,
-#            : )
+# Parameters : 1) ( date_string in any format )
+#            :           OR
+#            : 2) ( month, day of month, year )
 # Throws     : Throws exception for any invalid input
 # Comments   : - Handles all years, even negative years (aka BC)
 #            : - <1 for Mon ... 7 for Sun>
@@ -2374,30 +2379,46 @@ sub get_first_of_month_day_of_week
 ###############################################################################
 sub get_numeric_day_of_week
    {
-   my (
-       $month_input_10,
-       $day_of_month_in_02,
-       $year_in_06,
-      )
-       = @_;
 
 
    # Incoming Inspection
-   my $num_input_params_29 = 3;
-   ( @_ ==  $num_input_params_29) or croak "\n\n   ($0)   '${\(caller(0))[3]}' should have exactly $num_input_params_29 parameter(s), (month, day_of_month, year).   '@_'.\n\n\n";
+   ( ( @_ ==  1 )  ||  ( @_ ==  3 ) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have either a date string, or a list of month,dayofmonth,year.   '@_'.\n\n\n";
 
 
-   ( ref(\$month_input_10) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the month    '$month_input_10'.\n\n\n";
-   ( $month_input_10  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the month    '$month_input_10'.\n\n\n";
-   ( is_valid_month($month_input_10) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a valid month    '$month_input_10'.\n\n\n";
+   my ( $month_input_10, $day_of_month_in_02, $year_in_06, $day_of_week_12 );
+   # Parsing date string and is recursive one time into this function
+   if ( @_ ==  1 )
+      {
+      ( ref(\$_[0]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the date string.    '$_[0]'.\n\n\n";
+      ( $_[0]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty string for the date string    '$_[0]'.\n\n\n";
 
-   ( ref(\$year_in_06) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the year number    '$year_in_06'.\n\n\n";
-   ( $year_in_06  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the year number    '$year_in_06'.\n\n\n";
-   ( is_valid_year($year_in_06) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects an integer value, positive, negative or zero, for the year number    '$year_in_06'.\n\n\n";
+      ($month_input_10, $day_of_month_in_02, $year_in_06, $day_of_week_12 ) = date_only_parse($_[0]);
+      if ( $day_of_week_12 )
+         {
+         return ( $day_of_week_12 );
+         }
+      else
+         {
+         croak "\n\n   ($0)   '${\(caller(0))[3]}' date string, '$_[0]', cannot be parsed.\n\n\n";
+         }
+      }
+   # Individual date components
+   else
+      {
+      ( ref(\$_[0]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the month    '$_[0]'.\n\n\n";
+      ( $_[0]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the month    '$_[0]'.\n\n\n";
+      ( is_valid_month($_[0]) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a valid month    '$_[0]'.\n\n\n";
 
-   ( ref(\$day_of_month_in_02) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the day of month    '$day_of_month_in_02'.\n\n\n";
-   ( $day_of_month_in_02  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the day of month    '$day_of_month_in_02'.\n\n\n";
-   ( is_valid_day_of_month($month_input_10, $day_of_month_in_02, $year_in_06) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects an integer value for the day of month (1-31)    '$day_of_month_in_02'.\n\n\n";
+      ( ref(\$_[2]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the year number    '$_[2]'.\n\n\n";
+      ( $_[2]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the year number    '$_[2]'.\n\n\n";
+      ( is_valid_year($_[2]) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects an integer value, positive, negative or zero, for the year number    '$_[2]'.\n\n\n";
+
+      ( ref(\$_[1]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the day of month    '$_[1]'.\n\n\n";
+      ( $_[1]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the day of month    '$_[1]'.\n\n\n";
+      ( is_valid_day_of_month($_[0], $_[1], $_[2]) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects an integer value for the day of month (1-31)    '$_[1]'.\n\n\n";
+
+      ($month_input_10, $day_of_month_in_02, $year_in_06 ) = ( $_[0], $_[1], $_[2] );
+      }
 
 
    my $month_num_14 = set_month_to_month_number($month_input_10);
@@ -2748,9 +2769,6 @@ sub number_of_weekdays_in_range
    ( date_only_parse($date_two_05) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Cannot extract the date from the input date2 string    '$date_two_05'.\n\n\n";
 
 
-   # Use to get day of week only, other parameters are not used
-   my ( $date2_month_num_09, $date2_day_of_month_09, $date2_year_num_09, $date2_day_of_week_09 ) = date_only_parse($date_two_05);
-
    # Get count of ALL days in range as a starting point
    my $number_of_days_in_range_00 = date1_to_date2_delta( $date_one_05, $date_two_05 );
 
@@ -2760,7 +2778,7 @@ sub number_of_weekdays_in_range
    # Get the remainder of weekdays in the range that is discarded by the previous variable
    my $week_remainder_00 = abs( $number_of_days_in_range_00 ) % 7;
 
-   my $current_dayofweek_00 = $date2_day_of_week_09;
+   my $current_dayofweek_00 = get_numeric_day_of_week($date_two_05);
    # Cycle through the left over days in the range that do not form a WHOLE week and add them in into the total IF they are weekdays
    for ( my $iii_004=0; $iii_004<$week_remainder_00; $iii_004++ )
       {
@@ -2812,6 +2830,159 @@ sub number_of_weekdays_in_range
 
 
 
+###############################################################################
+# Usage      : date_offset_in_weekdays( SCALAR, SCALAR )
+# Purpose    : find a WEEKDAY date in the future or past offset by the number of weekdays from the given starting WEEKDAY date
+# Returns    : - date of the WEEKDAY day offset from the given WEEKDAY date if successful
+# Parameters : (
+#            :   WEEKDAY date in any format,
+#            :   number of weekdays offset, positive is future date, negative is past date, zero is current date (no offset)
+#            : )
+# Throws     : Throws exception for any invalid input INCLUDING weekend dates
+# Comments   : This effectively functions as if ALL weekend dates were removed
+#            : from the calendar.  This function accepts ONLY weekday dates and
+#            : outputs ONLY weekday dates
+# See Also   : N/A
+###############################################################################
+sub date_offset_in_weekdays
+   {
+   my (
+       $date_in_05,
+       $date_delta_01
+      )
+       = @_;
+
+
+   # Incoming Inspection
+   my $num_input_params_36 = 2;
+   ( @_ ==  $num_input_params_36) or croak "\n\n   ($0)   '${\(caller(0))[3]}' should have exactly $num_input_params_36 parameter(s), a date string followed by the number of offset days.   '@_'.\n\n\n";
+
+   ( ref(\$date_in_05) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the date string    '$date_in_05'.\n\n\n";
+   ( $date_in_05  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty string for the date string    '$date_in_05'.\n\n\n";
+   ( date_only_parse($date_in_05) ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Cannot parse the date from the input date string    '$date_in_05'.\n\n\n";
+
+   ( ref(\$date_delta_01) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the number of offset days    '$date_delta_01'.\n\n\n";
+   ( $date_delta_01  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty value for the number of offset days    '$date_delta_01'.\n\n\n";
+   ( $date_delta_01  =~ m/^\-{0,1}\d+$/ ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects an integer value, positive, negative or zero, for the number of offset days    '$date_delta_01'.\n\n\n";
+
+
+   # Check that starting date is a WEEKDAY
+   my $day_of_week_16 = get_numeric_day_of_week($date_in_05);
+
+   ( $day_of_week_16 < 6 ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects the starting date, '$date_in_05', to be a WEEKDAY.  It is incorrectly a ${\(set_day_to_day_name_full($day_of_week_16))}.\n\n\n";
+
+   my $past_future = 1;
+   if ( $date_delta_01 < 0 )
+      {
+      $past_future = -1;
+      }
+
+#  1    0    0       7/5                       2    0    0       7/5                       3    0    0       7/5                       4    0    0       7/5                       5    0    0       7/5
+#  1    1    1   int(7/5)                      2    1    1   int(7/5)                      3    1    1   int(7/5)                      4    1    1   int(7/5)                      5    1    3   int(7/5) + 2
+#  1    2    2   int(7/5)                      2    2    2   int(7/5)                      3    2    2   int(7/5)                      4    2    4   int(7/5) + 2                  5    2    4   int(7/5) + 2
+#  1    3    3   int(7/5) - 1                  2    3    3   int(7/5) - 1                  3    3    5   int(7/5) + 1                  4    3    5   int(7/5) + 1                  5    3    5   int(7/5) + 1
+#  1    4    4   int(7/5) - 1                  2    4    6   int(7/5) + 1                  3    4    6   int(7/5) + 1                  4    4    6   int(7/5) + 1                  5    4    6   int(7/5) + 1
+
+#  1    0    0           7/5                   2    0    0           7/5                   3    0    0           7/5                   4    0    0           7/5                   5    0    0           7/5     
+#  1   -1   -3  -int(abs(7/5)) - 2             2   -1   -1  -int(abs(7/5))                 3   -1   -1  -int(abs(7/5))                 4   -1   -1  -int(abs(7/5))                 5   -1   -1  -int(abs(7/5))
+#  1   -2   -4  -int(abs(7/5)) - 2             2   -2   -4  -int(abs(7/5)) - 2             3   -2   -2  -int(abs(7/5))                 4   -2   -2  -int(abs(7/5))                 5   -2   -2  -int(abs(7/5))
+#  1   -3   -5  -int(abs(7/5)) - 1             2   -3   -5  -int(abs(7/5)) - 1             3   -3   -5  -int(abs(7/5)) - 1             4   -3   -3  -int(abs(7/5)) + 1             5   -3   -3  -int(abs(7/5)) + 1
+#  1   -4   -6  -int(abs(7/5)) - 1             2   -4   -6  -int(abs(7/5)) - 1             3   -4   -6  -int(abs(7/5)) - 1             4   -4   -6  -int(abs(7/5)) - 1             5   -4   -4  -int(abs(7/5)) + 1
+
+   my $weekday_remainder = abs($date_delta_01) % 5;
+   my $num_days_effective = 'xxx';
+   if (
+       ( ( $day_of_week_16  ==  1 )  &&  ( $date_delta_01  >  0 ) )  ||
+       ( ( $day_of_week_16  ==  5 )  &&  ( $date_delta_01  <  0 ) )
+      )
+      {
+      foreach ( $weekday_remainder )
+         {
+         SWITCH:
+            {
+            if ( $_ <=  2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) );                       last SWITCH; }
+                                $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) - $past_future;
+            }
+         }
+      }
+   elsif (
+          ( ( $day_of_week_16  ==  2 )  &&  ( $date_delta_01  >  0 ) )  ||
+          ( ( $day_of_week_16  ==  4 )  &&  ( $date_delta_01  <  0 ) )
+         )
+      {
+      foreach ( $weekday_remainder )
+         {
+         SWITCH:
+            {
+            if ( $_ <=  2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) );                       last SWITCH; }
+            if ( $_ ==  3 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) - $past_future;        last SWITCH; }
+                                $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future;
+            }
+         }
+      }
+   elsif (
+          ( ( $day_of_week_16  ==  3 )  &&  ( $date_delta_01  >  0 ) )  ||
+          ( ( $day_of_week_16  ==  3 )  &&  ( $date_delta_01  <  0 ) )
+         )
+      {
+      foreach ( $weekday_remainder )
+         {
+         SWITCH:
+            {
+            if ( $_ <=  2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) );                       last SWITCH; }
+                                $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future;
+            }
+         }
+      }
+   elsif (
+          ( ( $day_of_week_16  ==  4 )  &&  ( $date_delta_01  >  0 ) )  ||
+          ( ( $day_of_week_16  ==  2 )  &&  ( $date_delta_01  <  0 ) )
+         )
+      {
+      foreach ( $weekday_remainder )
+         {
+         SWITCH:
+            {
+            if ( $_ <   2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) );                       last SWITCH; }
+            if ( $_ ==  2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future * 2;    last SWITCH; }
+                                $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future;
+            }
+         }
+      }
+   elsif (
+          ( ( $day_of_week_16  ==  5 )  &&  ( $date_delta_01  >  0 ) )  ||
+          ( ( $day_of_week_16  ==  1 )  &&  ( $date_delta_01  <  0 ) )
+         )
+      {
+      foreach ( $weekday_remainder )
+         {
+         SWITCH:
+            {
+            if ( $_ ==  0 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) );                       last SWITCH; }
+            if ( $_ ==  1 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future * 2;    last SWITCH; }
+            if ( $_ ==  2 )   { $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future * 2;    last SWITCH; }
+                                $num_days_effective = $past_future * int( abs($date_delta_01 * (7/5) ) ) + $past_future;
+            }
+         }
+      }
+   else
+      {
+      $num_days_effective = 0;
+      }
+
+
+   # Check that offset date is a WEEKDAY
+   my $weekday_offset_00 = date_offset_in_days($date_in_05, $num_days_effective);
+   my $day_of_week_17 = get_numeric_day_of_week($weekday_offset_00);
+
+   ( $day_of_week_17 < 6 ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects the offset date, '$weekday_offset_00', to be a WEEKDAY.  It is incorrectly a ${\(set_day_to_day_name_full($day_of_week_17))}.  This condition should NOT occur.  Something is amiss.\n\n\n";
+
+   return ( $weekday_offset_00 );
+   }
+
+
+
+
 }
 1;
 
@@ -2825,13 +2996,13 @@ Date::Components - Parses, processes and formats ONLY dates and date components
 
 =head1 VERSION
 
-This documentation refers to Date::Components version 0.0.2
+This documentation refers to Date::Components version 0.1.0
 
 =head1 SYNOPSIS
 
 
   use Carp              1.04   qw(croak);
-  use Date::Components  0.0.2  qw(
+  use Date::Components  0.1.0  qw(
                                   date_only_parse
                                   is_valid_year
                                   set_day_to_day_name_abbrev
@@ -2886,9 +3057,9 @@ is only a leap year if it is exactly divisible by 400. So, 2100 won't be a leap
 year but 2000 is. The next century year, exactly divisible by 400, won't occur
 until 2400--400 years away.
 
-Two subroutines, C<is_valid_date> and C<format_date>, are overloaded to
-accept either a list of date components or a single SCALAR date string
-to enable more flexible usage.
+Subroutines C<is_valid_date>, C<format_date> and C<get_numeric_day_of_week>
+are overloaded to accept either a list of date components or a single SCALAR
+date string to enable more flexible usage.
 
 Date strings returned by subroutines are always in default format.
 
@@ -2971,6 +3142,8 @@ Date strings returned by subroutines are always in default format.
 =item C<date1_to_date2_delta>
 
 =item C<date_offset_in_days>
+
+=item C<date_offset_in_weekdays>
 
 =item C<compare_year1_and_year2>
 
@@ -4021,6 +4194,54 @@ None by default.
 
 
 
+=item B<date_offset_in_weekdays>
+
+=over 8
+
+=item Usage:
+
+ my $offset_date = date_offset_in_weekdays( $date, $num_days );
+
+=item Purpose:
+
+ Find a WEEKDAY date in the future or past offset by the number of weekdays from the given starting WEEKDAY date
+
+=item Returns:
+
+ Date of the weekday offset from the given weekday date
+
+=item Parameter(s):
+
+ - Weekday date string in any format
+ - Integer number of weekdays, positive or negative
+
+=item Throws:
+
+ Throws exception for any invalid input INCLUDING weekend dates
+
+=item Comments:
+
+ This effectively functions as if ALL weekend dates were removed
+ from the calendar.  This function accepts ONLY weekday dates and
+ outputs ONLY weekday dates
+
+=item Examples:
+
+ date_offset_in_weekdays('Mon Jul 11 08:50:51 1977', -7);  # Returns '06/30/1977'
+ date_offset_in_weekdays('Tue Jul 12 08:50:51 1977', -3);  # Returns '07/07/1977'
+ date_offset_in_weekdays('Wed Jul 13 08:50:51 1977',  0);  # Returns '07/13/1977'
+ date_offset_in_weekdays('Thu Jul 14 08:50:51 1977',  3);  # Returns '07/19/1977'
+ date_offset_in_weekdays('Fri Jul 15 08:50:51 1977',  7);  # Returns '07/26/1977'
+
+=back
+
+
+
+
+
+
+
+
 =item B<compare_year1_and_year2>
 
 =over 8
@@ -4653,7 +4874,11 @@ None by default.
 
 =item Usage:
 
- my $day_of_week = get_numeric_day_of_week( $month, $dayofmonth, $year );
+ Function is overloaded to accept one of two date input types
+ 1) Date string
+     my $day_of_week = get_numeric_day_of_week( SCALAR );
+ 2) Month, dayofmonth, year
+     my $day_of_week = get_numeric_day_of_week( SCALAR, SCALAR, SCALAR );
 
 =item Purpose:
 
@@ -4665,9 +4890,9 @@ None by default.
 
 =item Parameter(s):
 
- - Month in one of three formats ( numeric <1-12>, full name or three character abbreviated )
- - Day of month (1-31)
- - Year
+ - ( date_string in any format )
+           OR
+ - ( month, day of month, year )
 
 =item Throws:
 
@@ -4684,6 +4909,8 @@ None by default.
  get_numeric_day_of_week(    2,     29, -2000); # Returns 2
  get_numeric_day_of_week('Dec',     31,  1795); # Returns 4
  get_numeric_day_of_week('January',  1,  2000); # Returns 6
+ get_numeric_day_of_week('Sep  23, 1541');      # Returns 2
+ get_numeric_day_of_week('June  6, 2001');      # Returns 3
 
 =back
 
@@ -4990,7 +5217,7 @@ David McAllister, E<lt>perldave@gmail.comE<gt>
 
 Copyright (C) 2007 by David McAllister
 
-Date::Components version 0.0.2 
+Date::Components version 0.1.0 
 
 This program is free (or copyleft) software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by

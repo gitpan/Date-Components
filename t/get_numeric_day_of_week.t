@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 75;
+use Test::More tests => 82;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -29,9 +29,6 @@ ok(($@),      'Invalid day of week.  It must be 1-7 where 1 represents Monday');
 
 eval {get_numeric_day_of_week(3, 'Feb ', 2003)};
 ok(($@),      'Leading and trailing spaces in parameters are NOT allowed');
-
-eval {get_numeric_day_of_week('Jun, 6, 2001')};
-ok(($@),      'Three parmeters CANNOT be combined into one string');
 
 eval {get_numeric_day_of_week('Marc', 3, 2003)};
 ok(($@),      'Only THREE letter month abbreviations are allowed.');
@@ -108,10 +105,26 @@ ok(($@),      'NULL value NOT allowed for day of month');
 eval {get_numeric_day_of_week('Feb', 28,  '')};
 ok(($@),      'NULL value NOT allowed for year');
 
+eval {get_numeric_day_of_week({})};
+ok(($@),      'Only SCALAR values are allowed.');
+
+eval {get_numeric_day_of_week([6,3,2007])};
+ok(($@),      'Only SCALAR values are allowed.');
+
+eval {get_numeric_day_of_week()};
+ok(($@),      'Empty parameter list is NOT allowed.');
+
+eval {get_numeric_day_of_week('')};
+ok(($@),      'Empty first parameter is NOT allowed.');
+
+eval {get_numeric_day_of_week('February  29, 1995')};
+ok(($@),      'Invalid date.');
 
 
 
 
+
+# date components input
 is(get_numeric_day_of_week(    1,       31,   665),        2,      'date    1       31   665 is a Tuesday  ');
 is(get_numeric_day_of_week(    2,       29,  1492),        1,      'date    2       29  1492 is a Monday   ');
 is(get_numeric_day_of_week(    3,       31,   -75),        2,      'date    3       31   -75 is a Tuesday  ');
@@ -153,3 +166,8 @@ is(get_numeric_day_of_week('December',  31,  1795),        4,      'date  Decemb
 is(get_numeric_day_of_week('February',  29, -2000),        2,      'date  February  29 -2000 is a Tuesday  ');
 is(get_numeric_day_of_week('Jun',       11,  1995),        7,      'date  Jun       11  1995 is a Sunday   ');
 is(get_numeric_day_of_week('January',    1,  2000),        6,      'date  January    1  2000 is a Saturday ');
+
+# date string input
+is(get_numeric_day_of_week('June  6, 2001'),               3,      'date  June       6  2001 is a Wednesday');
+is(get_numeric_day_of_week('Sep  23, 1541'),               2,      'date  Sep       23  1541 is a Tuesday  ');
+is(get_numeric_day_of_week('February  28, 1995'),          2,      'date  February  28  1995 is a Tuesday  ');

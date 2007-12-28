@@ -47,4 +47,5 @@ t/test_manifest
 t/test_pod.t
 t/test_pod_function_completeness.t
 t/year1_to_year2_delta.t
+t/date_offset_in_weekdays.t
 META.yml                                 Module meta-data (added by MakeMaker)

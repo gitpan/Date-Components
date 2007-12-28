@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 80;
+use Test::More tests => 81;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -157,6 +157,8 @@ ok(($@),      'ONLY SCALAR parameters are allowed.');
 eval {format_date({}, 4, 1599)};
 ok(($@),      'ONLY SCALAR parameters are allowed.');
 
+eval {format_date('7/4/3122',  'E')};
+ok(($@),      'ONLY RECOGNIZED parameters are allowed.');
 
 
 

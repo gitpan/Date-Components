@@ -12,3 +12,14 @@ Revision history for Perl extension Date::Components.
           failed virtually all tests by CPAN testers.  It is now included
           in the Makefile.PL file.  Dependencies were also added for these two
           POD modules, Test::Pod and Test::Pod::Coverage.
+
+
+0.1.0  Fri Dec 28 15:42:55 CST 2007
+	- New subroutine, 'date_offset_in_weekdays', was added.
+        - Subroutine, 'get_numeric_day_of_week', is now overloaded to accept
+          a date string as input along with the original list of date
+          components.
+        - Subroutine, 'format_date', was modified so that unrecognized formats
+          are now treated as invalid inputs and an exception is thrown.
+          Previously, unrecognized date format options returned the default
+          date format.

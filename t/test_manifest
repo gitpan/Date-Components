@@ -47,3 +47,4 @@ compare_year1_and_year2.t
 year1_to_year2_delta.t
 date_offset_in_years.t
 number_of_weekdays_in_range.t
+date_offset_in_weekdays.t
