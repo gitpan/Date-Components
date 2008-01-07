@@ -3,6 +3,10 @@ Date-Components.t
 test_pod.t
 test_pod_function_completeness.t
 
+get_month_from_string.t
+get_dayofmonth_from_string.t
+get_year_from_string.t
+
 day_number_to_day_name.t
 get_year_phase.t
 is_leap_year.t

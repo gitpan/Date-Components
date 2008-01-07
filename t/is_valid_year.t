@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 36;
+use Test::More tests => 37;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -44,12 +44,13 @@ is(is_valid_year('2007', '2008'), '',      'year is obviously invalid');
 is(is_valid_year('2007.55'),      '',      'year is obviously invalid');
 is(is_valid_year('-1600 BC'),     '',      'year is obviously invalid');
 is(is_valid_year('785AD'),        '',      'year is obviously invalid');
-is(is_valid_year('-2020'),         1,      'year is obviously valid');
-is(is_valid_year('-33'),           1,      'year is obviously valid');
-is(is_valid_year('-1'),            1,      'year is obviously valid');
-is(is_valid_year('0'),             1,      'year is obviously valid');
-is(is_valid_year(15),              1,      'year is obviously valid');
-is(is_valid_year('1300'),          1,      'year is obviously valid');
-is(is_valid_year(1457),            1,      'year is obviously valid');
-is(is_valid_year(1999),            1,      'year is obviously valid');
-is(is_valid_year('2642'),          1,      'year is obviously valid');
+is(is_valid_year('-2020'),         1,      'year   -2020    is obviously valid');
+is(is_valid_year('-33'),           1,      'year     -33    is obviously valid');
+is(is_valid_year('-1'),            1,      'year      -1    is obviously valid');
+is(is_valid_year('0'),             1,      'year       0    is obviously valid');
+is(is_valid_year(15),              1,      'year      15    is obviously valid');
+is(is_valid_year('1300'),          1,      'year    1300    is obviously valid');
+is(is_valid_year(1457),            1,      'year    1457    is obviously valid');
+is(is_valid_year(1999),            1,      'year    1999    is obviously valid');
+is(is_valid_year('2642'),          1,      'year    2642    is obviously valid');
+is(is_valid_year(0),               1,      'year       0    is obviously valid');

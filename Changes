@@ -23,3 +23,15 @@ Revision history for Perl extension Date::Components.
           are now treated as invalid inputs and an exception is thrown.
           Previously, unrecognized date format options returned the default
           date format.
+
+
+0.2.0  Mon Jan  7 00:40:34 CST 2008
+	- New subroutines added:
+
+              get_month_from_string
+              get_dayofmonth_from_string
+              get_year_from_string
+
+	- Additional tests added to cover year zero in both string and
+          integer format.  No problem existed to be solved, just more
+          test cases were added.

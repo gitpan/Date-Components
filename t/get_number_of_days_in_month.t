@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 48;
+use Test::More tests => 52;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -98,22 +98,27 @@ ok(($@),      'Year must be a SCALAR number.');
 
 
 
-is(get_number_of_days_in_month('Feb',1700),            28,     'there are 28 days in month Feb of year 1700');
-is(get_number_of_days_in_month('Feb',1600),            29,     'there are 29 days in month Feb of year 1600');
-is(get_number_of_days_in_month('Feb',2300),            28,     'there are 28 days in month Feb of year 2300');
-is(get_number_of_days_in_month('Feb',  -1),            28,     'there are 28 days in month Feb of year   -1');
-is(get_number_of_days_in_month('Feb',1999),            28,     'there are 28 days in month Feb of year 1999');
-is(get_number_of_days_in_month('Jan',1996),            31,     'there are 31 days in month Jan of year 1996');
-is(get_number_of_days_in_month('Feb',1996),            29,     'there are 29 days in month Feb of year 1996');
-is(get_number_of_days_in_month('Mar',1996),            31,     'there are 31 days in month Mar of year 1996');
-is(get_number_of_days_in_month('Apr',1996),            30,     'there are 30 days in month Apr of year 1996');
-is(get_number_of_days_in_month('May',1996),            31,     'there are 31 days in month May of year 1996');
-is(get_number_of_days_in_month('Jun',1996),            30,     'there are 30 days in month Jun of year 1996');
-is(get_number_of_days_in_month('Jul',1996),            31,     'there are 31 days in month Jul of year 1996');
-is(get_number_of_days_in_month('Aug',1996),            31,     'there are 31 days in month Aug of year 1996');
-is(get_number_of_days_in_month('Sep',1996),            30,     'there are 30 days in month Sep of year 1996');
-is(get_number_of_days_in_month('Oct',1996),            31,     'there are 31 days in month Oct of year 1996');
-is(get_number_of_days_in_month('Nov',1996),            30,     'there are 30 days in month Nov of year 1996');
-is(get_number_of_days_in_month('Dec',1996),            31,     'there are 31 days in month Dec of year 1996');
-is(get_number_of_days_in_month('1',  1011),            31,     'there are 31 days in month   1 of year 1011');
-is(get_number_of_days_in_month('2',   -57),            28,     'there are 28 days in month   2 of year  -57');
+is(get_number_of_days_in_month('Feb',1700),    28,     'there are 28 days in month Feb of year 1700');
+is(get_number_of_days_in_month('Feb',1600),    29,     'there are 29 days in month Feb of year 1600');
+is(get_number_of_days_in_month('Feb',2300),    28,     'there are 28 days in month Feb of year 2300');
+is(get_number_of_days_in_month('Feb',  -1),    28,     'there are 28 days in month Feb of year   -1');
+is(get_number_of_days_in_month('Feb',1999),    28,     'there are 28 days in month Feb of year 1999');
+is(get_number_of_days_in_month('Jan',1996),    31,     'there are 31 days in month Jan of year 1996');
+is(get_number_of_days_in_month('Feb',1996),    29,     'there are 29 days in month Feb of year 1996');
+is(get_number_of_days_in_month('Mar',1996),    31,     'there are 31 days in month Mar of year 1996');
+is(get_number_of_days_in_month('Apr',1996),    30,     'there are 30 days in month Apr of year 1996');
+is(get_number_of_days_in_month('May',1996),    31,     'there are 31 days in month May of year 1996');
+is(get_number_of_days_in_month('Jun',1996),    30,     'there are 30 days in month Jun of year 1996');
+is(get_number_of_days_in_month('Jul',1996),    31,     'there are 31 days in month Jul of year 1996');
+is(get_number_of_days_in_month('Aug',1996),    31,     'there are 31 days in month Aug of year 1996');
+is(get_number_of_days_in_month('Sep',1996),    30,     'there are 30 days in month Sep of year 1996');
+is(get_number_of_days_in_month('Oct',1996),    31,     'there are 31 days in month Oct of year 1996');
+is(get_number_of_days_in_month('Nov',1996),    30,     'there are 30 days in month Nov of year 1996');
+is(get_number_of_days_in_month('Dec',1996),    31,     'there are 31 days in month Dec of year 1996');
+is(get_number_of_days_in_month('1',  1011),    31,     'there are 31 days in month   1 of year 1011');
+is(get_number_of_days_in_month('2',   -57),    28,     'there are 28 days in month   2 of year  -57');
+
+is(get_number_of_days_in_month( 1,    0),      31,     'there are 31 days in month   1 of year 0');
+is(get_number_of_days_in_month('Feb', 0),      29,     'there are 29 days in month   2 of year 0');
+is(get_number_of_days_in_month('8',   0),      31,     'there are 31 days in month   8 of year 0');
+is(get_number_of_days_in_month(12,    0),      31,     'there are 31 days in month  12 of year 0');

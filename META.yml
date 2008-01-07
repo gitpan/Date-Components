@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Date-Components
-version:             v0.1.0
+version:             v0.2.0
 abstract:            Parses, processes and formats ONLY dates and date components
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.31

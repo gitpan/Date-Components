@@ -1,4 +1,4 @@
-Date-Components version 0.1.0
+Date-Components version 0.2.0
 =======================
 
 
@@ -32,9 +32,9 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENSE
 
-   Copyright (C) 2007 by David McAllister
+   Copyright (C) 2008 by David McAllister
 
-   Date::Components version 0.1.0 
+   Date::Components version 0.2.0 
 
    This program is free (or copyleft) software: you can redistribute it and/or
    modify it under the terms of the GNU General Public License as published by

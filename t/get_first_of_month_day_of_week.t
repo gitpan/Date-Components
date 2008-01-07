@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 36;
+use Test::More tests => 39;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -79,3 +79,7 @@ is(get_first_of_month_day_of_week('Nov',1996),            5,     'day of week fo
 is(get_first_of_month_day_of_week('Dec',1996),            7,     'day of week for first of Dec in year 1996 is Sunday   ');
 is(get_first_of_month_day_of_week('1',  1011),            2,     'day of week for first of Jan in year 1011 is Tuesday  ');
 is(get_first_of_month_day_of_week('2',   -57),            1,     'day of week for first of Feb in year  -57 is Monday   ');
+
+is(get_first_of_month_day_of_week( 1,   0),            6,     'day of week for first of Jan in year  0 is Saturday  ');
+is(get_first_of_month_day_of_week('8',  0),            2,     'day of week for first of Aug in year  0 is Tuesday   ');
+is(get_first_of_month_day_of_week(12,   0),            5,     'day of week for first of Dec in year  0 is Friday    ');

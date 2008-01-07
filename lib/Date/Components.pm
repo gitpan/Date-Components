@@ -38,6 +38,9 @@ our @EXPORT_OK = ( qw(
                       get_num_days_in_year
                       get_days_remaining_in_year
                       get_numeric_day_of_week
+                      get_month_from_string
+                      get_dayofmonth_from_string
+                      get_year_from_string
                       get_number_of_days_in_month
                       get_days_remaining_in_month
                       get_first_of_month_day_of_week
@@ -69,7 +72,7 @@ our %EXPORT_TAGS = (
                     'all' => [ @EXPORT_OK, @EXPORT ],
                    );
 
-use version; our $VERSION = qv('0.1.0');
+use version; our $VERSION = qv('0.2.0');
 
 
 # According to the Royal Greenwich Observatory, the calendar year is 365 days
@@ -212,7 +215,7 @@ sub date_only_parse
 # Purpose    : checks if date is valid
 # Returns    : - '1' if date is valid
 #            : - ''  otherwise
-# Parameters : 1) ( date_string in any format )
+# Parameters : 1) ( date string in any format )
 #            :           OR
 #            : 2) ( month, day of month, year )
 #            :           OR
@@ -2152,7 +2155,7 @@ sub day_number_within_400_year_cycle_to_date
 #            :       format_date( SCALAR, SCALAR, SCALAR, <SCALAR> )
 # Purpose    : Formats dates
 # Returns    : date string if successful
-# Parameters : 1) ( date_string in any format, <optional date format> )
+# Parameters : 1) ( date string in any format, <optional date format> )
 #            :           OR
 #            : 2) ( month, day of month, year, <optional date format> )
 # Throws     : Throws exception for any invalid input
@@ -2369,7 +2372,7 @@ sub get_first_of_month_day_of_week
 #            :       get_numeric_day_of_week( SCALAR, SCALAR, SCALAR )
 # Purpose    : get numeric day of week (1-7) for given date
 # Returns    : - day of week number if successful
-# Parameters : 1) ( date_string in any format )
+# Parameters : 1) ( date string in any format )
 #            :           OR
 #            : 2) ( month, day of month, year )
 # Throws     : Throws exception for any invalid input
@@ -2437,6 +2440,112 @@ sub get_numeric_day_of_week
       }
 
    return ( $first_of_month_day_of_week_02 );
+   }
+
+
+
+
+###############################################################################
+# Usage      : get_month_from_string( SCALAR )
+# Purpose    : extract month from given date string
+# Returns    : month number if successful
+# Parameters : date string in any format
+# Throws     : Throws exception for any invalid input
+# Comments   : - Handles all years, even negative years (aka BC)
+#            : - 1 for Jan ... 12 for Dec
+# See Also   : N/A
+###############################################################################
+sub get_month_from_string
+   {
+
+
+   # Incoming Inspection
+   ( @_ ==  1 ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have a date string to be parsed.   '@_'.\n\n\n";
+
+   ( ref(\$_[0]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the date string.    '$_[0]'.\n\n\n";
+   ( $_[0]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty string for the date string    '$_[0]'.\n\n\n";
+
+
+   my  ($month_input_15, $day_of_month_15, $year_15, $day_of_week_15) = date_only_parse( $_[0] );
+   if ( $month_input_15  eq  '' )
+      {
+      croak "\n\n   ($0)   '${\(caller(0))[3]}' Cannot extract the date from the input date string    '$_[0]'.\n\n\n";
+      }
+   else
+      {
+      return ( $month_input_15 );
+      }
+
+   }
+
+
+
+
+###############################################################################
+# Usage      : get_dayofmonth_from_string( SCALAR )
+# Purpose    : extract day of month from given date string
+# Returns    : day of month if successful
+# Parameters : date string in any format
+# Throws     : Throws exception for any invalid input
+# Comments   : - Handles all years, even negative years (aka BC)
+# See Also   : N/A
+###############################################################################
+sub get_dayofmonth_from_string
+   {
+
+
+   # Incoming Inspection
+   ( @_ ==  1 ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have a date string to be parsed.   '@_'.\n\n\n";
+
+   ( ref(\$_[0]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the date string.    '$_[0]'.\n\n\n";
+   ( $_[0]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty string for the date string    '$_[0]'.\n\n\n";
+
+
+   my  ($month_input_18, $day_of_month_18, $year_18, $day_of_week_18) = date_only_parse( $_[0] );
+   if ( !(defined ($day_of_month_18) ) )
+      {
+      croak "\n\n   ($0)   '${\(caller(0))[3]}' Cannot extract the date from the input date string    '$_[0]'.\n\n\n";
+      }
+   else
+      {
+      return ( $day_of_month_18 );
+      }
+
+   }
+
+
+
+
+###############################################################################
+# Usage      : get_year_from_string( SCALAR )
+# Purpose    : extract year from given date string
+# Returns    : year if successful
+# Parameters : date string in any format
+# Throws     : Throws exception for any invalid input
+# Comments   : - Handles all years, even negative years (aka BC)
+# See Also   : N/A
+###############################################################################
+sub get_year_from_string
+   {
+
+
+   # Incoming Inspection
+   ( @_ ==  1 ) or croak "\n\n   ($0)   '${\(caller(0))[3]}'  Should have a date string to be parsed.   '@_'.\n\n\n";
+
+   ( ref(\$_[0]) eq 'SCALAR' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a SCALAR parameter for the date string.    '$_[0]'.\n\n\n";
+   ( $_[0]  ne  '' ) or croak "\n\n   ($0)   '${\(caller(0))[3]}' Expects a NON-empty string for the date string    '$_[0]'.\n\n\n";
+
+
+   my  ($month_input_14, $day_of_month_14, $year_14, $day_of_week_14) = date_only_parse( $_[0] );
+   if ( !(defined ($year_14) ) )
+      {
+      croak "\n\n   ($0)   '${\(caller(0))[3]}' Cannot extract the date from the input date string    '$_[0]'.\n\n\n";
+      }
+   else
+      {
+      return ( $year_14 );
+      }
+
    }
 
 
@@ -2996,13 +3105,13 @@ Date::Components - Parses, processes and formats ONLY dates and date components
 
 =head1 VERSION
 
-This documentation refers to Date::Components version 0.1.0
+This documentation refers to Date::Components version 0.2.0
 
 =head1 SYNOPSIS
 
 
   use Carp              1.04   qw(croak);
-  use Date::Components  0.1.0  qw(
+  use Date::Components  0.2.0  qw(
                                   date_only_parse
                                   is_valid_year
                                   set_day_to_day_name_abbrev
@@ -3179,6 +3288,12 @@ Date strings returned by subroutines are always in default format.
 
 =item C<get_numeric_day_of_week>
 
+=item C<get_month_from_string>
+
+=item C<get_dayofmonth_from_string>
+
+=item C<get_year_from_string>
+
 =item C<get_number_of_days_in_month>
 
 =item C<get_days_remaining_in_month>
@@ -3302,7 +3417,7 @@ None by default.
 
 =item Parameter(s):
 
- - ( date_string in any format, <optional date format> )
+ - ( date string in any format, <optional date format> )
                   OR
  - ( month, day of month, year, <optional date format> )
 
@@ -3368,7 +3483,7 @@ None by default.
 
 =item Parameter(s):
 
- - ( date_string in any format )
+ - ( date string in any format )
            OR
  - ( month, day of month, year )
            OR
@@ -4890,7 +5005,7 @@ None by default.
 
 =item Parameter(s):
 
- - ( date_string in any format )
+ - ( date string in any format )
            OR
  - ( month, day of month, year )
 
@@ -4911,6 +5026,145 @@ None by default.
  get_numeric_day_of_week('January',  1,  2000); # Returns 6
  get_numeric_day_of_week('Sep  23, 1541');      # Returns 2
  get_numeric_day_of_week('June  6, 2001');      # Returns 3
+
+=back
+
+
+
+
+
+
+
+
+=item B<get_month_from_string>
+
+=over 8
+
+=item Usage:
+
+ my $month_number = get_month_from_string( SCALAR );
+
+=item Purpose:
+
+ Extract month from given date string
+
+=item Returns:
+
+ Month number
+
+=item Parameter(s):
+
+ Date string in any format
+
+=item Throws:
+
+ Throws exception for any invalid input
+
+=item Comments:
+
+ - Handles all years, even negative years (aka BC)
+ - <1 for Jan ... 12 for Dec>
+
+=item Examples:
+
+ get_month_from_string('12/31/1795');               # Returns  12
+ get_month_from_string('Sat Oct 22 08:50:51 1577'); # Returns  10
+ get_month_from_string('June  6, 2001');            # Returns   6
+ get_month_from_string('February  28, 1995');       # Returns   2
+ get_month_from_string('-1755-08-15');              # Returns   8
+ get_month_from_string('19 May, 227');              # Returns   5
+
+=back
+
+
+
+
+
+
+
+
+=item B<get_dayofmonth_from_string>
+
+=over 8
+
+=item Usage:
+
+ my $day_of_month = get_dayofmonth_from_string( SCALAR );
+
+=item Purpose:
+
+ Extract day of month from given date string
+
+=item Returns:
+
+ Day of month
+
+=item Parameter(s):
+
+ Date string in any format
+
+=item Throws:
+
+ Throws exception for any invalid input
+
+=item Comments:
+
+ - Handles all years, even negative years (aka BC)
+
+=item Examples:
+
+ get_dayofmonth_from_string('12/31/1795');               # Returns  31
+ get_dayofmonth_from_string('Sat Oct 22 08:50:51 1577'); # Returns  22
+ get_dayofmonth_from_string('June  6, 2001');            # Returns   6
+ get_dayofmonth_from_string('February  28, 1995');       # Returns  28
+ get_dayofmonth_from_string('-1755-08-15');              # Returns  15
+ get_dayofmonth_from_string('19 May, 227');              # Returns  19
+
+=back
+
+
+
+
+
+
+
+
+=item B<get_year_from_string>
+
+=over 8
+
+=item Usage:
+
+ my $year = get_year_from_string( SCALAR );
+
+=item Purpose:
+
+ Extract year from given date string
+
+=item Returns:
+
+ Year
+
+=item Parameter(s):
+
+ Date string in any format
+
+=item Throws:
+
+ Throws exception for any invalid input
+
+=item Comments:
+
+ - Handles all years, even negative years (aka BC)
+
+=item Examples:
+
+ get_year_from_string('Sat Oct 22 08:50:51 1577'); # Returns  1577
+ get_year_from_string('June  6, 2001');            # Returns  2001
+ get_year_from_string('February  28, 1995');       # Returns  1995
+ get_year_from_string('-1755-08-15');              # Returns -1755
+ get_year_from_string('19 May, 227');              # Returns   227
+ get_year_from_string('04/27/0');                  # Returns     0
 
 =back
 
@@ -5215,9 +5469,9 @@ David McAllister, E<lt>perldave@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2007 by David McAllister
+Copyright (C) 2008 by David McAllister
 
-Date::Components version 0.1.0 
+Date::Components version 0.2.0 
 
 This program is free (or copyleft) software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by

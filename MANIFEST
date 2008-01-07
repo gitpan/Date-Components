@@ -7,6 +7,9 @@ t/calculate_day_of_week_for_first_of_month_in_next_year.t
 t/compare_date1_and_date2.t
 t/compare_year1_and_year2.t
 t/Date-Components.t
+t/get_month_from_string.t
+t/get_dayofmonth_from_string.t
+t/get_year_from_string.t
 t/date1_to_date2_delta.t
 t/date_offset_in_days.t
 t/date_offset_in_years.t

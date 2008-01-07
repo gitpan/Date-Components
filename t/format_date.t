@@ -5,7 +5,7 @@
 
 # change 'tests => 1' to 'tests => last_test_to_print';
 
-use Test::More tests => 81;
+use Test::More tests => 84;
 #use Test::More qw(no_plan);
 BEGIN { use_ok('Date::Components') };
 BEGIN { use_ok('Test::Manifest') };
@@ -212,3 +212,7 @@ is(format_date( 3,  7, 1604,  'D'),     '1604-03-07',             'format_date')
 
 is(format_date('15 January, 1596', 'D'),     '1596-01-15',             'format_date');
 is(format_date('15 January,  -87', 'D'),      '-87-01-15',             'format_date');
+
+is(format_date( 1,   1, 0, 'A'),     'Sat Jan  1 12:00:00 0',      'format_date');
+is(format_date( 8,  16, 0, 'A'),     'Wed Aug 16 12:00:00 0',      'format_date');
+is(format_date(12,  31, 0, 'A'),     'Sun Dec 31 12:00:00 0',      'format_date');
