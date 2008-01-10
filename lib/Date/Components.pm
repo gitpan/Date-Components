@@ -9,8 +9,8 @@ require Exporter;
 
 our @ISA = qw(Exporter);
 
-eval {use Carp            1.04  qw(croak)};
-eval {use Readonly        1.03};
+eval {use Carp   qw(croak)};
+eval {use Readonly};
 
 our @EXPORT = qw();
 
@@ -72,7 +72,7 @@ our %EXPORT_TAGS = (
                     'all' => [ @EXPORT_OK, @EXPORT ],
                    );
 
-use version; our $VERSION = qv('0.2.0');
+use version; our $VERSION = qv('0.2.1');
 
 
 # According to the Royal Greenwich Observatory, the calendar year is 365 days
@@ -3105,18 +3105,18 @@ Date::Components - Parses, processes and formats ONLY dates and date components
 
 =head1 VERSION
 
-This documentation refers to Date::Components version 0.2.0
+This documentation refers to Date::Components version 0.2.1
 
 =head1 SYNOPSIS
 
 
-  use Carp              1.04   qw(croak);
-  use Date::Components  0.2.0  qw(
-                                  date_only_parse
-                                  is_valid_year
-                                  set_day_to_day_name_abbrev
-                                  format_date
-                                 );
+  use Carp              qw(croak);
+  use Date::Components  qw(
+                           date_only_parse
+                           is_valid_year
+                           set_day_to_day_name_abbrev
+                           format_date
+                          );
 
   # Parse a $date string and extract its components
   my $date = 'Mon Sep 17 08:50:51 2007';
@@ -5421,12 +5421,15 @@ conditions.  Use the standard C<make test> to run.
 
 =head1 DEPENDENCIES
 
-   - Carp                  1.04  qw(croak);
-   - Readonly              1.03;
-   - Readonly::XS          1.04;
-   - Test::Manifest        1.22;
-   - Test::Pod             1.26;
-   - Test::Pod::Coverage   1.08;
+   warnings              1.05
+   version               0.74
+   Carp                  1.04
+   Readonly              1.03
+   Readonly::XS          1.04
+   Test::More            0.74
+   Test::Manifest        1.22
+   Test::Pod             1.26
+   Test::Pod::Coverage   1.08
 
 
 
@@ -5471,7 +5474,7 @@ David McAllister, E<lt>perldave@gmail.comE<gt>
 
 Copyright (C) 2008 by David McAllister
 
-Date::Components version 0.2.0 
+Date::Components version 0.2.1 
 
 This program is free (or copyleft) software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by

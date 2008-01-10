@@ -35,3 +35,13 @@ Revision history for Perl extension Date::Components.
 	- Additional tests added to cover year zero in both string and
           integer format.  No problem existed to be solved, just more
           test cases were added.
+
+
+0.2.1  Thu Jan 10 00:01:59 CST 2008
+	- Add dependicies to Makefile.PL to these modules to eliminate
+          the CPAN tester error for version 0.2.0 where the 'version'
+          module could not be found.
+
+               warnings       1.05
+               version        0.74
+               Test::More     0.74

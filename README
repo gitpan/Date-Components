@@ -1,4 +1,4 @@
-Date-Components version 0.2.0
+Date-Components version 0.2.1
 =======================
 
 
@@ -18,11 +18,15 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
+     warnings              1.05
+     version               0.74
      Carp                  1.04
      Readonly              1.03
+     Test::More            0.74
      Test::Manifest        1.22
      Test::Pod             1.26
      Test::Pod::Coverage   1.08
+
 
    Install but do NOT use.  Readonly accesses it to improve performance
      Readonly::XS  1.04  
@@ -34,7 +38,7 @@ COPYRIGHT AND LICENSE
 
    Copyright (C) 2008 by David McAllister
 
-   Date::Components version 0.2.0 
+   Date::Components version 0.2.1 
 
    This program is free (or copyleft) software: you can redistribute it and/or
    modify it under the terms of the GNU General Public License as published by
